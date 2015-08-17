@@ -134,35 +134,12 @@ public class MainActivity extends Activity implements
         btnfl = (Button) findViewById(R.id.btnfl);
         Context context = this;
         PackageManager pm = context.getPackageManager();
-        camera = Camera.open();
-        final Camera.Parameters p = camera.getParameters();
-        btnfl.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        // if device support camera?
+        if (!pm.hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
+            Log.e("err", "Device has no camera!");
+            return;
+        }
 
-                if (isLighOn) {
-
-                    Log.i("info", "torch is turn off!");
-
-                    p.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
-                    camera.setParameters(p);
-                    camera.stopPreview();
-                    isLighOn = false;
-
-                } else {
-
-                    Log.i("info", "torch is turn on!");
-
-                    p.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
-
-                    camera.setParameters(p);
-                    camera.startPreview();
-                    isLighOn = true;
-
-                }
-
-            }
-        });
 
     }
 
@@ -188,9 +165,9 @@ public class MainActivity extends Activity implements
         Log.d(TAG2, "onStop fired ..............");
         mGoogleApiClient.disconnect();
         Log.d(TAG2, "isConnected ...............: " + mGoogleApiClient.isConnected());
-        if (camera != null) {
-            camera.release();
-        }
+        //if (camera != null) {
+        //    camera.release();
+        //}
     }
 
     private boolean isGooglePlayServicesAvailable() {
@@ -242,6 +219,9 @@ public class MainActivity extends Activity implements
     protected void onPause() {
         super.onPause();
         stopLocationUpdates();
+        if (camera != null) {
+            camera.release();
+        }
     }
 
     protected void stopLocationUpdates() {
@@ -257,6 +237,37 @@ public class MainActivity extends Activity implements
             startLocationUpdates();
             Log.d(TAG2, "Location update resumed .....................");
         }
+
+        camera = Camera.open();
+        final Camera.Parameters p = camera.getParameters();
+        btnfl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (isLighOn) {
+
+                    Log.i("info", "torch is turn off!");
+
+                    p.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+                    camera.setParameters(p);
+                    camera.stopPreview();
+                    isLighOn = false;
+
+                } else {
+
+                    Log.i("info", "torch is turn on!");
+
+                    p.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
+
+                    camera.setParameters(p);
+                    camera.startPreview();
+                    isLighOn = true;
+
+                }
+
+            }
+        });
+
     }
 
 
